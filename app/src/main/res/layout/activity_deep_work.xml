@@ -1,32 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".DeepWorkActivity">
+    android:background="@color/deep_blue">
 
-    <TextView
-        android:id="@+id/timer_Text"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="25:00"
-        android:textSize="60sp"
-        app:layout_constraintBottom_toTopOf="@+id/start_Button"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+    <!-- Time Box -->
+    <FrameLayout
+        android:id="@+id/timeBox"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_centerInParent="true">
 
+        <!-- Circular progress ring -->
+        <ProgressBar
+            android:id="@+id/progressRing"
+            style="?android:attr/progressBarStyleHorizontal"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:indeterminate="false"
+            android:max="100"
+            android:progress="0"
+            android:progressDrawable="@drawable/circular_progress_white"
+            android:rotation="-90"
+            android:background="@android:color/transparent" />
+
+        <!-- Timer text -->
+        <TextView
+            android:id="@+id/timer_Text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="25:00"
+            android:textSize="48sp"
+            android:textColor="@android:color/white"
+            android:textStyle="bold" />
+
+    </FrameLayout>
+
+    <!-- Start Button -->
     <Button
         android:id="@+id/start_Button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Start Deep Work"
-        android:backgroundTint="@color/purple"
+        android:layout_width="200dp"
+        android:layout_height="52dp"
+        android:layout_below="@id/timeBox"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="48dp"
+        android:text="START"
+        android:textAllCaps="false"
+        android:textSize="16sp"
+        android:textStyle="bold"
         android:textColor="@android:color/white"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/timer_Text" />
+        android:background="@drawable/bg_start_button" />
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</RelativeLayout>

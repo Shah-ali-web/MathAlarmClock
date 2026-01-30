@@ -1,9 +1,9 @@
-// dummy test
 package com.example.mathalarmclock
 
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.widget.Button
+import android.widget.ProgressBar
 import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -12,6 +12,7 @@ class DeepWorkActivity : AppCompatActivity() {
 
     private lateinit var timerText: TextView
     private lateinit var startButton: Button
+    private lateinit var progressRing: ProgressBar
 
     private var sessionRunning = false
     private var timer: CountDownTimer? = null
@@ -24,9 +25,16 @@ class DeepWorkActivity : AppCompatActivity() {
 
         timerText = findViewById(R.id.timer_Text)
         startButton = findViewById(R.id.start_Button)
+        progressRing = findViewById(R.id.progressRing)
+
+        // Progress ring setup
+        progressRing.max = 100
+        progressRing.progress = 0
 
         startButton.setOnClickListener {
-            startFocusSession()
+            if (!sessionRunning) {
+                startFocusSession()
+            }
         }
     }
 
@@ -35,13 +43,20 @@ class DeepWorkActivity : AppCompatActivity() {
         startButton.isEnabled = false
 
         timer = object : CountDownTimer(focusTimeMillis, 1000) {
+
             override fun onTick(millisUntilFinished: Long) {
                 val minutes = millisUntilFinished / 60000
                 val seconds = (millisUntilFinished % 60000) / 1000
                 timerText.text = String.format("%02d:%02d", minutes, seconds)
+
+                // 🔵 Progress ring update
+                val progress =
+                    ((focusTimeMillis - millisUntilFinished) * 100 / focusTimeMillis).toInt()
+                progressRing.progress = progress
             }
 
             override fun onFinish() {
+                progressRing.progress = 100
                 sessionRunning = false
                 rewardUser()
             }
