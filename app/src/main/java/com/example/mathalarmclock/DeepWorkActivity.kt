@@ -1,7 +1,9 @@
 package com.example.mathalarmclock
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
 import android.os.CountDownTimer
+import android.view.animation.LinearInterpolator
 import android.widget.Button
 import android.widget.ProgressBar
 import android.widget.TextView
@@ -18,6 +20,7 @@ class DeepWorkActivity : AppCompatActivity() {
     private var timer: CountDownTimer? = null
 
     private val focusTimeMillis = 25 * 60 * 1000L // 25 minutes
+    private var lastProgress = 0   // ⭐ IMPORTANT
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -27,9 +30,10 @@ class DeepWorkActivity : AppCompatActivity() {
         startButton = findViewById(R.id.start_Button)
         progressRing = findViewById(R.id.progressRing)
 
-        // Progress ring setup
+        // ✅ ProgressBar MUST be determinate
         progressRing.max = 100
         progressRing.progress = 0
+        progressRing.isIndeterminate = false
 
         startButton.setOnClickListener {
             if (!sessionRunning) {
@@ -49,18 +53,33 @@ class DeepWorkActivity : AppCompatActivity() {
                 val seconds = (millisUntilFinished % 60000) / 1000
                 timerText.text = String.format("%02d:%02d", minutes, seconds)
 
-                // 🔵 Progress ring update
                 val progress =
                     ((focusTimeMillis - millisUntilFinished) * 100 / focusTimeMillis).toInt()
-                progressRing.progress = progress
+
+                animateProgress(progress)
             }
 
             override fun onFinish() {
-                progressRing.progress = 100
+                animateProgress(100)
                 sessionRunning = false
                 rewardUser()
             }
         }.start()
+    }
+
+    // 🟡 THIS IS THE MAGIC
+    private fun animateProgress(targetProgress: Int) {
+        val animator = ObjectAnimator.ofInt(
+            progressRing,
+            "progress",
+            lastProgress,
+            targetProgress
+        )
+        animator.duration = 500   // smooth
+        animator.interpolator = LinearInterpolator()
+        animator.start()
+
+        lastProgress = targetProgress
     }
 
     private fun rewardUser() {
