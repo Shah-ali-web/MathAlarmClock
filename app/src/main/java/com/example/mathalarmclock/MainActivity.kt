@@ -5,58 +5,63 @@ import android.app.AlarmManager
 import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
-import android.widget.Button
 import android.widget.TextView
-import android.widget.TimePicker
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
+import com.google.android.material.bottomnavigation.BottomNavigationView
 import java.util.Calendar
 
 class MainActivity : AppCompatActivity() {
 
-    // Lateinit var for the TimePicker and Buttons
-    private lateinit var timePicker: TimePicker
-    private lateinit var setAlarmButton: Button
-    private lateinit var todoListButton: Button
-
     override fun onResume() {
         super.onResume()
 
-        val streakText = findViewById<TextView>(R.id.streakText)
+        // Streak text exists only if present in layout
+        val streakText = findViewById<TextView?>(R.id.tvStreak)
         val streak = StreakManager.getStreak(this)
-
-        streakText.text = "🔥 Streak: $streak"
+        streakText?.text = "🔥 Streak: $streak"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        timePicker = findViewById(R.id.timePicker)
-        setAlarmButton = findViewById(R.id.setAlarmButton)
-        todoListButton = findViewById(R.id.todoListButton)
-
-        setAlarmButton.setOnClickListener {
-            setAlarm()
-        }
-        val deepWorkButton = findViewById<Button>(R.id.btnDeepWork)
-
-        deepWorkButton.setOnClickListener {
-            val intent = Intent(this, DeepWorkActivity::class.java)
-            startActivity(intent)
-        }
-
-
-        todoListButton.setOnClickListener {
-            val intent = Intent(this, TodoActivity::class.java)
-            startActivity(intent)
-        }
+        // Backend logic – untouched
         scheduleDailyCleanup()
+
+        // Bottom Navigation
+        val bottomNav = findViewById<BottomNavigationView>(R.id.bottomNavigation)
+
+        bottomNav.setOnItemSelectedListener { item ->
+            when (item.itemId) {
+
+                R.id.nav_home -> {
+                    true // already on home
+                }
+
+                R.id.nav_alarm -> {
+                    startActivity(Intent(this, AlarmActivity::class.java))
+                    true
+                }
+
+                R.id.nav_todo -> {
+                    startActivity(Intent(this, TodoActivity::class.java))
+                    true
+                }
+
+                R.id.nav_deepwork -> {
+                    startActivity(Intent(this, DeepWorkActivity::class.java))
+                    true
+                }
+
+                else -> false
+            }
+        }
     }
 
+    // Backend cleanup logic (safe)
     private fun scheduleDailyCleanup() {
         val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
 
@@ -79,40 +84,6 @@ class MainActivity : AppCompatActivity() {
             AlarmManager.INTERVAL_DAY,
             pendingIntent
         )
-    }
-
-    private fun setAlarm() {
-        val alarmManager = getSystemService(Context.ALARM_SERVICE) as AlarmManager
-
-        // 1. Create a Calendar object for the selected time
-        val calendar = Calendar.getInstance()
-        calendar.set(Calendar.HOUR_OF_DAY, timePicker.hour)
-        calendar.set(Calendar.MINUTE, timePicker.minute)
-        calendar.set(Calendar.SECOND, 0)
-
-        // Check if the selected time is in the past, if so, set it for the next day
-        if (calendar.timeInMillis <= System.currentTimeMillis()) {
-            calendar.add(Calendar.DAY_OF_YEAR, 1)
-        }
-
-        // 2. Create the Intent to fire the AlarmReceiver
-        val intent = Intent(this, AlarmReceiver::class.java)
-        val pendingIntent = PendingIntent.getBroadcast(
-            this, // Context
-            0,    // Request code (unique ID for this alarm)
-            intent,
-            PendingIntent.FLAG_IMMUTABLE or PendingIntent.FLAG_UPDATE_CURRENT
-        )
-
-
-        alarmManager.setExactAndAllowWhileIdle(
-            AlarmManager.RTC_WAKEUP, // Use RTC_WAKEUP to wake the device
-            calendar.timeInMillis,   // The time in milliseconds
-            pendingIntent
-        )
-
-        val timeString = String.format("%02d:%02d", timePicker.hour, timePicker.minute)
-        Toast.makeText(this, "Alarm set for $timeString", Toast.LENGTH_LONG).show()
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
