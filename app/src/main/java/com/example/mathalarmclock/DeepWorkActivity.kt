@@ -15,7 +15,7 @@ class DeepWorkActivity : AppCompatActivity() {
     private var sessionRunning = false
     private var timer: CountDownTimer? = null
 
-    private val focusTimeMillis = 1 * 60 * 1000L // 25 minutes
+    private val focusTimeMillis = 25 * 60 * 1000L // 25 minutes
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,8 +51,6 @@ class DeepWorkActivity : AppCompatActivity() {
         val prefs = getSharedPreferences("FOCUS_PREF", MODE_PRIVATE)
         val fuel = prefs.getInt("FUEL", 0) + 10
         prefs.edit().putInt("FUEL", fuel).apply()
-        ProgressManager.addProgress(this, 20)
-
 
         Toast.makeText(this, "Deep Work Complete! +10 Fuel 🔥", Toast.LENGTH_LONG).show()
         finish()
@@ -62,8 +60,6 @@ class DeepWorkActivity : AppCompatActivity() {
         timer?.cancel()
         sessionRunning = false
         Toast.makeText(this, "Focus broken! Session failed ❌", Toast.LENGTH_LONG).show()
-        ProgressManager.addProgress(this, -10)
-
         finish()
     }
 
