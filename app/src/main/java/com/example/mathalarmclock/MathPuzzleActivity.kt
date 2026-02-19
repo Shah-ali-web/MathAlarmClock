@@ -78,6 +78,7 @@ class MathPuzzleActivity : AppCompatActivity() {
             "Alarm Dismissed! Streak updated 🔥",
             Toast.LENGTH_LONG
         ).show()
+        ProgressManager.addProgress(this, 15)
 
         finish()
     }

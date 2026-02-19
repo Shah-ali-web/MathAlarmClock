@@ -10,7 +10,7 @@
         android:id="@+id/timer_Text"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="25:00"
+        android:text="01:00"
         android:textSize="60sp"
         app:layout_constraintBottom_toTopOf="@+id/start_Button"
         app:layout_constraintEnd_toEndOf="parent"
